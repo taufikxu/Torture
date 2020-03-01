@@ -1,3 +1,3 @@
 from . import resnet_cifar
 from . import resnet_imagenet
-from . import inception_score
+from .eval_inception_score import inception_score

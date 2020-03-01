@@ -1,7 +1,15 @@
 import torch
 import numpy as np
 from torch import optim
+import torch.nn.init as init
+from torch import nn
 from Utils.flags import FLAGS
+
+
+# Function for Initialization
+def weight_init(m):
+    if hasattr(m, 'reset_parameters'):
+        m.reset_parameters()
 
 
 def toggle_grad(model, requires_grad):
