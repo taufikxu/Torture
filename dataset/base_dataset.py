@@ -1,9 +1,10 @@
 import os
+import glob
 import torch
 from torchvision import transforms
 from torch.utils.data import Dataset
 import numpy as np
-import PIL.Image
+import PIL.Image as Image
 
 
 class InfinityDataloaderWraper(object):
@@ -43,7 +44,7 @@ class NumpyImageLabelDataset(Dataset):
             img = np.repeat(img, 3, axis=2)
 
         img = (img * 255.0).astype(np.uint8)
-        img = PIL.Image.fromarray(img)
+        img = Image.fromarray(img)
         if self.transform is not None:
             img = self.transform(img)
 
@@ -65,7 +66,35 @@ class NumpyImageDataset(Dataset):
             img = np.repeat(img, 3, axis=2)
 
         img = (img * 255.0).astype(np.uint8)
-        img = PIL.Image.fromarray(img)
+        img = Image.fromarray(img)
+        if self.transform is not None:
+            img = self.transform(img)
+
+        return img
+
+
+class ImageInFolder(Dataset):
+    def __init__(self, root, ext=".jpg", transform=None):
+        self.imgs = glob.glob(root + "/*" + ext)
+        if transform is None:
+            transform = transforms.Compose([
+                transforms.ToTensor(),
+                # transforms.Normalize([0.5, 0.5, 0.5], [0.5, 0.5, 0.5])
+            ])
+        self.transform = transform
+
+    def pil_loader(self, path):
+        # open path as file to avoid ResourceWarning (https://github.com/python-pillow/Pillow/issues/835)
+        with open(path, 'rb') as f:
+            img = Image.open(f)
+            return img.convert('RGB')
+
+    def __len__(self):
+        return len(self.imgs)
+
+    def __getitem__(self, index):
+        img = self.pil_loader(self.imgs[index])
+
         if self.transform is not None:
             img = self.transform(img)
 
