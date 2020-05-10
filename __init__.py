@@ -4,7 +4,10 @@ from . import advtools
 from . import shortcuts
 from . import dataset
 from . import loss_function
+from . import utils
 
 from .shortcuts import *
 import torch
 import numpy as np
+
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
