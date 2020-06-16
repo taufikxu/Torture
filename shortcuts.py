@@ -18,14 +18,12 @@ def toggle_grad(model, requires_grad):
 
 
 def update_average(model_tgt, model_src, beta=0.999):
-    toggle_grad(model_src, False)
-    toggle_grad(model_tgt, False)
     param_dict_src = dict(model_src.named_parameters())
-
     for p_name, p_tgt in model_tgt.named_parameters():
         p_src = param_dict_src[p_name]
         assert p_src is not p_tgt
-        p_tgt.copy_(beta * p_tgt + (1.0 - beta) * p_src)
+        # p_tgt.copy_(beta * p_tgt + (1.0 - beta) * p_src)
+        p_tgt.data.mul_(beta).add_((1 - beta) * p_src.data)
 
 
 def get_nsamples(data_loader, N):
